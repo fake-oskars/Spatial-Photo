@@ -5,7 +5,7 @@ import os
 import re
 from functools import partial
 import vispy
-import scipy.misc as misc
+
 from tqdm import tqdm
 import yaml
 import time
@@ -222,6 +222,9 @@ for idx in tqdm(range(len(sample_list))):
     config['original_h'], config['original_w'] = config['output_h'], config['output_w']
     if image.ndim == 2:
         image = image[..., None].repeat(3, -1)
+    elif image.ndim == 3 and image.shape[2] == 4:
+        # Convert RGBA to RGB if image has 4 channels
+        image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
     if np.sum(np.abs(image[..., 0] - image[..., 1])) == 0 and np.sum(np.abs(image[..., 1] - image[..., 2])) == 0:
         config['gray_image'] = True
     else:
